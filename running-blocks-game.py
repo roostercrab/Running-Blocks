@@ -19,7 +19,7 @@ ENEMY_SPEED = 10
 
 # INITIALLY DEFINE PLAYER
 player_size = 50
-player_pos = [SCREEN_WIDTH/2, SCREEN_HEIGHT-2*player_size]
+player_pos = [SCREEN_WIDTH + player_size, SCREEN_HEIGHT - player_size]
 player_x_coord = player_pos[0]
 player_y_coord = player_pos[1]
 score = 0

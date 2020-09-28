@@ -23,7 +23,7 @@ score = 0
 
 # INITIALLY DEFINE ENEMY
 enemy_size = 50
-enemy_pos = [random.randint(0, SCREEN_WIDTH - enemy_size), 0]
+enemy_pos = [(SCREEN_WIDTH - enemy_size), (SCREEN_HEIGHT - enemy_size)]
 enemy_x_coord = enemy_pos[0]
 enemy_y_coord = enemy_pos[1]
 enemy_list = [enemy_pos]
