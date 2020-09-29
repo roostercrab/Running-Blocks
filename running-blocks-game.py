@@ -15,7 +15,7 @@ hangtime = 10
 
 run = True
 while run:
-  pygame.time.delay(5)
+
 
   for event in pygame.event.get():
     if event.type == pygame.QUIT:
@@ -23,7 +23,7 @@ while run:
 
     # PLAYER BLOCK MOVEMENT
     keypress = pygame.key.get_pressed()
-    
+
     if not(jumping):
       if keypress[pygame.K_SPACE]:
         jumping = True
@@ -41,6 +41,7 @@ while run:
 
   window.fill((0,0,0))
   pygame.draw.rect(window, (0,0,255), (player_x, player_y, player_width, player_height))
+  pygame.time.delay(30)
   pygame.display.update()
 
 pygame.quit()
