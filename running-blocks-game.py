@@ -8,8 +8,6 @@ player_x = 50
 player_y = 400
 player_width = 40
 player_height = 60
-
-
 jumping = False
 jump_velocity = 10
 
@@ -22,17 +20,18 @@ while run:
       run = False
 
     # PLAYER BLOCK MOVEMENT
+
     keypress = pygame.key.get_pressed()
 
-    if jumping is False and keypress[pygame.K_SPACE]:
+    if keypress[pygame.K_SPACE]:
       jumping = True
-
-    if jumping is True:
-      player_y -= jump_velocity
-      jump_velocity -= 1
-      if jump_velocity < -10:
-        jumping = False
-        jump_velocity = 10
+      if jumping == True:
+        player_y -= jump_velocity
+        print(jump_velocity )
+        jump_velocity -= 1
+        if jump_velocity < -10:
+          jump_velocity = 10
+          jumping = False
 
 
   pygame.time.delay(1)
