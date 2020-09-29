@@ -1,71 +1,46 @@
 import pygame
-import sys
- 
 
 pygame.init()
-clock = pygame.time.Clock()
+pygame.display.set_caption("Running Blocks")
+window = pygame.display.set_mode((500, 500))
 
-# INITIALIZE SCREEN AND COLORS
-SCREEN_HEIGHT = 600
-SCREEN_WIDTH = 800
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-GREEN = (0, 255, 0)
-BLUE = (0, 0, 255)
-BACKGROUND_COLOR = (0,0,0)
+player_x = 50
+player_y = 400
+player_width = 40
+player_height = 60
+velocity = 5
 
-#INITIALIZE SCORE
-score = 0
+jumping = False
+hangtime = 10
 
-# INITIALIZE PLAYER
-player_size = 50
-player_pos = [50, 525]
-player_x_coord = player_pos[0]
-player_y_coord = player_pos[1]
-player_color = BLUE
+run = True
+while run:
+  pygame.time.delay(5)
 
-# INITIALIZE ENEMY
-enemy_size = 50
-enemy_pos = [750, 525]
-enemy_x_coord = enemy_pos[0]
-enemy_y_coord = enemy_pos[1]
-enemy_color = GREEN
-enemy_list = [enemy_pos]
-
-# GAME LOOP
-game_over = False
-while not game_over:
   for event in pygame.event.get():
-    print(event)
     if event.type == pygame.QUIT:
-      sys.exit()
+      run = False
 
-  # PLAYER JUMP
-    if event.type == pygame.KEYDOWN:
-      if event.key == pygame.K_SPACE:
-        hangtime = 1
-        while hangtime <= 50:
-          player_y_coord -= hangtime
-          hangtime = hangtime + hangtime
-        player_pos[1] = player_y_coord
-        pygame.draw.rect(screen, player_color, (player_x_coord, player_y_coord, player_size, player_size))
+    # PLAYER BLOCK MOVEMENT
+    keypress = pygame.key.get_pressed()
+    
+    if not(jumping):
+      if keypress[pygame.K_SPACE]:
+        jumping = True
+    else:
+      if hangtime >= -10:
+        gravity = 1
+        if hangtime < 0:
+          gravity = -1
+        player_y -= int((hangtime ** 2) * 0.5 * gravity)
+        hangtime -= 1
+      else:
+        jumping = False
+        hangtime = 10
 
-        hangtime = 50
-        while hangtime >= 1:
-          player_y_coord += hangtime
-          hangtime = hangtime - hangtime
-        player_pos[1] = player_y_coord
-        pygame.draw.rect(screen, player_color, (player_x_coord, player_y_coord, player_size, player_size))
 
-
-  # PAINT BACKGROUND
-  screen.fill(BACKGROUND_COLOR)
-
-  # PLAYER IMAGE DRAW
-  pygame.draw.rect(screen, player_color, (player_x_coord, player_y_coord, player_size, player_size))
-
-  # ENEMY IMAGE DRAW
-  pygame.draw.rect(screen, enemy_color, (enemy_x_coord, enemy_y_coord, enemy_size, enemy_size))
-
-  # UPDATE SCREEN
-  clock.tick(30)
+  window.fill((0,0,0))
+  pygame.draw.rect(window, (0,0,255), (player_x, player_y, player_width, player_height))
   pygame.display.update()
+
+pygame.quit()
