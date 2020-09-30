@@ -51,6 +51,7 @@ while run:
 
   # PLAYER BLOCK MOVEMENT
   pygame.draw.rect(window, (0,0,255), (player_x, player_y, player_width, player_height))
+
   keypress = pygame.key.get_pressed()
 
   if keypress[pygame.K_SPACE]:
