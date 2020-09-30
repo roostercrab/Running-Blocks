@@ -1,4 +1,5 @@
 import pygame
+import random
 
 pygame.init()
 pygame.display.set_caption("Running Blocks")
@@ -11,6 +12,13 @@ player_height = 60
 jumping = False
 jump_progress = []
 jump_velocity = 20
+
+tree_x = 490
+tree_y = 420
+tree_width = 10
+tree_height = 40
+tree_list = []
+tree_speed = 10
 
 #FUNCTIONS
 def jump(player_y, jump_velocity):
@@ -49,6 +57,22 @@ while run:
 
   if jumping == True:
       jump_progress = jump(player_y, jump_velocity)
+
+  if len(tree_list) < 10:
+    tree_chance = random.randint(1, 25)
+    if tree_chance == 1:
+      tree_list.append([tree_x, tree_y])
+
+  for tree in tree_list:
+    if tree[0] <= 0:
+      tree_list.remove(tree)
+    else:
+      print(tree[0])
+      tree[0] = tree[0] - tree_speed
+      print(tree[0])
+
+  for tree in tree_list:
+    pygame.draw.rect(window, (0,255,0), (tree[0], tree_y, tree_width, tree_height))
 
   pygame.time.delay(10)
   pygame.display.update()
