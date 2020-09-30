@@ -10,12 +10,12 @@ player_width = 40
 player_height = 60
 jumping = False
 jump_progress = []
-jump_velocity = 10
+jump_velocity = 20
 
 #FUNCTIONS
 def jump(player_y, jump_velocity):
-    if jump_velocity < -10:
-      jump_velocity = 10
+    if jump_velocity < -20:
+      jump_velocity = 20
       jump_progress = []
       return jump_progress
     else:
@@ -35,7 +35,7 @@ while run:
 
   if jump_progress == []:
     player_y = 400
-    jump_velocity = 10
+    jump_velocity = 20
     jumping = False
   else:
     player_y = jump_progress[0]
