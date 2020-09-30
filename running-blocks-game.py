@@ -36,7 +36,6 @@ def jump(player_y, jump_velocity):
 run = True
 while run:
   window.fill((0,0,0))
-  pygame.draw.rect(window, (0,0,255), (player_x, player_y, player_width, player_height))
   for event in pygame.event.get():
     if event.type == pygame.QUIT:
       run = False
@@ -50,6 +49,7 @@ while run:
     jump_velocity = jump_progress[1]
 
   # PLAYER BLOCK MOVEMENT
+  pygame.draw.rect(window, (0,0,255), (player_x, player_y, player_width, player_height))
   keypress = pygame.key.get_pressed()
 
   if keypress[pygame.K_SPACE]:
@@ -67,9 +67,7 @@ while run:
     if tree[0] <= 0:
       tree_list.remove(tree)
     else:
-      print(tree[0])
       tree[0] = tree[0] - tree_speed
-      print(tree[0])
 
   for tree in tree_list:
     pygame.draw.rect(window, (0,255,0), (tree[0], tree_y, tree_width, tree_height))
