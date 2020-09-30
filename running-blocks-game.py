@@ -18,7 +18,7 @@ tree_y = 420
 tree_width = 10
 tree_height = 40
 tree_list = []
-tree_speed = 10
+tree_speed = 5
 
 #FUNCTIONS
 def jump(player_y, jump_velocity):
@@ -59,7 +59,7 @@ while run:
       jump_progress = jump(player_y, jump_velocity)
 
   if len(tree_list) < 10:
-    tree_chance = random.randint(1, 25)
+    tree_chance = random.randint(1, 50)
     if tree_chance == 1:
       tree_list.append([tree_x, tree_y])
 
