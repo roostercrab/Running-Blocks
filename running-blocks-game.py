@@ -28,6 +28,7 @@ tree_height = 40
 tree_list = []
 tree_speed = 5
 tree_countdown = 0
+tree_rate = 100
 
 # START THE GAME RUN LOOP
 game_over = False
@@ -46,6 +47,23 @@ while game_over is False:
   text = "Score: " + str(score)
   label = text_font.render(text, 1, (255,255,0))
   window.blit(label, (550, 460))
+
+  # SCORE WILL INCREASE TREE SPEED EACH 10 POINTS
+  if score >= 10 and score < 20:
+    tree_speed = 10
+    tree_rate = 90
+  if score >= 20 and score < 30:
+    tree_speed = 15
+    tree_rate = 80
+  if score >= 30 and score < 40:
+    tree_speed = 20
+    tree_rate = 70
+  if score >= 40 and score < 50:
+    tree_speed = 25
+    tree_rate = 60
+  if score >= 50 and score < 60:
+    tree_speed = 30
+    tree_rate = 50
 
   # PRINT PLAYER LIFE TO SCREEN
   text = "Life: " + str(player_life)
@@ -80,7 +98,7 @@ while game_over is False:
   # TREES WILL ONLY APPEAR IF THERE ARE LESS THAN 5 ON THE SCREEN AND TREE COUNTDOWN IS EQUAL TO OR LESS THAN 0
   tree_countdown -= 1
   if len(tree_list) < 5 and tree_countdown <= 0:
-    tree_chance = random.randint(1, 100)
+    tree_chance = random.randint(1, tree_rate)
     if tree_chance == 1:
       tree_list.append([tree_x, tree_y])
       tree_countdown = 10
