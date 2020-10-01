@@ -35,6 +35,29 @@ def jump(player_y, jump_velocity):
       jump_progress = [player_y, jump_velocity]
       return jump_progress
 
+def collision(player_x, player_y, player_height, player_width, tree_list, tree_height, tree_width):
+  player_x_space = range(player_x, player_x + player_width)
+  player_y_space = range(player_y, player_y + player_height)
+  player_x_set = set(player_x_space)
+
+  for tree in tree_list:
+    tree_x = int(tree[0])
+    tree_y = int(tree[1])
+
+    tree_x_space = range(tree_x, tree_x + tree_width)
+    tree_y_space = range(tree_y, tree_y + tree_height)
+    tree_x_set = set(tree_x_space)
+
+    x_set_result = player_x_set.intersection(tree_x_set)
+
+    player_y_set = set(player_y_space)
+    tree_y_set = set(tree_y_space)
+    y_set_result = player_y_set.intersection(tree_y_set)
+
+    if x_set_result and y_set_result != set():
+      return True
+    return False
+
 # START THE GAME RUN LOOP
 game_over = False
 while game_over is False:
@@ -89,15 +112,12 @@ while game_over is False:
   for tree in tree_list:
     pygame.draw.rect(window, (0,255,0), (tree[0], tree_y, tree_width, tree_height))
 
+  hit = collision(player_x, player_y, player_height, player_width, tree_list, tree_height, tree_width)
+  if hit == True:
+    print("GAME OVER")
+    game_over = True
+
   pygame.time.delay(10)
   pygame.display.update()
 
 pygame.quit()
-
-[[740, 420]]
-[[700, 420], [740, 420]]
-[[445, 420], [485, 420], [740, 420]]
-[[285, 420], [325, 420], [580, 420], [740, 420]]
-[[155, 420], [740, 420]]
-[[525, 420], [740, 420]]
-[[265, 420], [480, 420], [740, 420]]
