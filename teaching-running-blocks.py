@@ -21,6 +21,7 @@ tree_y = 420
 tree_width = 10
 tree_height = 40
 tree_list = []
+tree_speed = 5
 
 # FUNCTIONS
 def jump(player_y, jump_velocity):
