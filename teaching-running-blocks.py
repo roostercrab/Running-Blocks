@@ -79,6 +79,10 @@ while game_over is False:
 
   # SUBTRACT THE TREE_SPEED FROM THE X COORDINATE OF EACH TREE IN THE LIST SO THAT THEY MOVE TOWARDS US
   for tree in tree_list:
+    if tree[0] <= 0:
+      tree_list.remove(tree)
+    # IF THEY HAVEN'T GONE OFF SCREEN THEN INCREASE THEIR X POSITION BY THE TREE SPEED
+    else:
       tree[0] -= tree_speed
 
   # DRAW EACH TREE FROM THE TREE_LIST ON THE EDGE OF THE SCREEN
@@ -89,3 +93,11 @@ while game_over is False:
   pygame.display.update()
 
 pygame.quit()
+
+[[740, 420]]
+[[700, 420], [740, 420]]
+[[445, 420], [485, 420], [740, 420]]
+[[285, 420], [325, 420], [580, 420], [740, 420]]
+[[155, 420], [740, 420]]
+[[525, 420], [740, 420]]
+[[265, 420], [480, 420], [740, 420]]
