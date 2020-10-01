@@ -76,6 +76,10 @@ while game_over is False:
     tree_list.append([tree_x, tree_y])
     print(tree_list)
 
+  # SUBTRACT THE TREE_SPEED FROM THE X COORDINATE OF EACH TREE IN THE LIST SO THAT THEY MOVE TOWARDS US
+  for tree in tree_list:
+      tree[0] -= tree_speed
+
   # DRAW EACH TREE FROM THE TREE_LIST ON THE EDGE OF THE SCREEN
   for tree in tree_list:
     pygame.draw.rect(window, (0,255,0), (tree[0], tree_y, tree_width, tree_height))

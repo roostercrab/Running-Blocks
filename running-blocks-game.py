@@ -94,6 +94,7 @@ while game_over is False:
   if jumping == True:
       jump_progress = jump.up(player_y, jump_velocity)
 
+  # CREATE TREES
   # TREE COUNTDOWN IS SET TO 10 AFTER A TREE IS CREATED
   # TREES WILL ONLY APPEAR IF THERE ARE LESS THAN 5 ON THE SCREEN AND TREE COUNTDOWN IS EQUAL TO OR LESS THAN 0
   tree_countdown -= 1
