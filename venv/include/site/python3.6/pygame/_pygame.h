@@ -27,24 +27,35 @@
 #define _PYGAME_INTERNAL_H
 
 #include "pgplatform.h"
+/*
+    If PY_SSIZE_T_CLEAN is defined before including Python.h, length is a
+    Py_ssize_t rather than an int for all # variants of formats (s#, y#, etc.)
+*/
+#define PY_SSIZE_T_CLEAN
 #include <Python.h>
+
+/* Ensure PyPy-specific code is not in use when running on GraalPython (PR #2580) */
+#if defined(GRAALVM_PYTHON) && defined(PYPY_VERSION)
+#undef PYPY_VERSION
+#endif
+
 #include <SDL.h>
 
 /* IS_SDLv1 is 1 if SDL 1.x.x, 0 otherwise */
 /* IS_SDLv2 is 1 if at least SDL 2.0.0, 0 otherwise */
-#if (SDL_VERSION_ATLEAST(2, 0, 0))
-#define IS_SDLv2 1
-#define IS_SDLv1 0
-#else
+#if !(SDL_VERSION_ATLEAST(2, 0, 0))
 #define IS_SDLv2 0
 #define IS_SDLv1 1
+#else
+#define IS_SDLv2 1
+#define IS_SDLv1 0
 #endif
 
 /*#if IS_SDLv1 && PG_MAJOR_VERSION >= 2
 #error pygame 2 requires SDL 2
 #endif*/
 
-#if SDL_VERSION_ATLEAST(2, 0, 0)
+#if IS_SDLv2
 /* SDL 1.2 constants removed from SDL 2 */
 typedef enum {
     SDL_HWSURFACE = 0,
@@ -81,23 +92,111 @@ typedef enum {
     /* Any SDL_* events here are for backward compatibility. */
     SDL_NOEVENT = 0,
 
-    /* pygame events */
-    PGE_EVENTBEGIN = SDL_USEREVENT, /* Not an event. Indicates start of pygame events. */
-    SDL_ACTIVEEVENT = PGE_EVENTBEGIN,
+    SDL_ACTIVEEVENT = SDL_USEREVENT,
     SDL_VIDEORESIZE,
     SDL_VIDEOEXPOSE,
-    PGE_KEYREPEAT,
+
     PGE_MIDIIN,
     PGE_MIDIOUT,
-    PGE_EVENTEND, /* Not an event. Indicates end of pygame events. */
+    PGE_KEYREPEAT, /* Special internal pygame event, for managing key-presses */
 
-    /* User event range. */
-    /* SDL 1.2 allowed for 8 user defined events. */
-    PGE_USEREVENT = PGE_EVENTEND,
-    PG_NUMEVENTS = PGE_USEREVENT + 0x2000 /* Not an event. Indicates end of user events. */
+    /* DO NOT CHANGE THE ORDER OF EVENTS HERE */
+    PGE_WINDOWSHOWN,
+    PGE_WINDOWHIDDEN,
+    PGE_WINDOWEXPOSED,
+    PGE_WINDOWMOVED,
+    PGE_WINDOWRESIZED,
+    PGE_WINDOWSIZECHANGED,
+    PGE_WINDOWMINIMIZED,
+    PGE_WINDOWMAXIMIZED,
+    PGE_WINDOWRESTORED,
+    PGE_WINDOWENTER,
+    PGE_WINDOWLEAVE,
+    PGE_WINDOWFOCUSGAINED,
+    PGE_WINDOWFOCUSLOST,
+    PGE_WINDOWCLOSE,
+    PGE_WINDOWTAKEFOCUS,
+    PGE_WINDOWHITTEST,
+
+    /* Here we define PGPOST_* events, events that act as a one-to-one
+     * proxy for SDL events (and some extra events too!), the proxy is used
+     * internally when pygame users use event.post()
+     *
+     * At a first glance, these may look redundant, but they are really
+     * important, especially with event blocking. If proxy events are
+     * not there, blocked events dont make it to our event filter, and
+     * that can break a lot of stuff.
+     *
+     * IMPORTANT NOTE: Do not post events directly with these proxy types,
+     * use the appropriate functions from event.c, that handle these proxy
+     * events for you.
+     * Proxy events are for internal use only */
+    PGPOST_EVENTBEGIN, /* mark start of proxy-events */
+    PGPOST_ACTIVEEVENT = PGPOST_EVENTBEGIN,
+    PGPOST_AUDIODEVICEADDED,
+    PGPOST_AUDIODEVICEREMOVED,
+    PGPOST_CONTROLLERAXISMOTION,
+    PGPOST_CONTROLLERBUTTONDOWN,
+    PGPOST_CONTROLLERBUTTONUP,
+    PGPOST_CONTROLLERDEVICEADDED,
+    PGPOST_CONTROLLERDEVICEREMOVED,
+    PGPOST_CONTROLLERDEVICEREMAPPED,
+    PGPOST_CONTROLLERTOUCHPADDOWN,
+    PGPOST_CONTROLLERTOUCHPADMOTION,
+    PGPOST_CONTROLLERTOUCHPADUP,
+    PGPOST_DOLLARGESTURE,
+    PGPOST_DOLLARRECORD,
+    PGPOST_DROPFILE,
+    PGPOST_DROPTEXT,
+    PGPOST_DROPBEGIN,
+    PGPOST_DROPCOMPLETE,
+    PGPOST_FINGERMOTION,
+    PGPOST_FINGERDOWN,
+    PGPOST_FINGERUP,
+    PGPOST_KEYDOWN,
+    PGPOST_KEYUP,
+    PGPOST_JOYAXISMOTION,
+    PGPOST_JOYBALLMOTION,
+    PGPOST_JOYHATMOTION,
+    PGPOST_JOYBUTTONDOWN,
+    PGPOST_JOYBUTTONUP,
+    PGPOST_JOYDEVICEADDED,
+    PGPOST_JOYDEVICEREMOVED,
+    PGPOST_MIDIIN,
+    PGPOST_MIDIOUT,
+    PGPOST_MOUSEMOTION,
+    PGPOST_MOUSEBUTTONDOWN,
+    PGPOST_MOUSEBUTTONUP,
+    PGPOST_MOUSEWHEEL,
+    PGPOST_MULTIGESTURE,
+    PGPOST_NOEVENT,
+    PGPOST_QUIT,
+    PGPOST_SYSWMEVENT,
+    PGPOST_TEXTEDITING,
+    PGPOST_TEXTINPUT,
+    PGPOST_VIDEORESIZE,
+    PGPOST_VIDEOEXPOSE,
+    PGPOST_WINDOWSHOWN,
+    PGPOST_WINDOWHIDDEN,
+    PGPOST_WINDOWEXPOSED,
+    PGPOST_WINDOWMOVED,
+    PGPOST_WINDOWRESIZED,
+    PGPOST_WINDOWSIZECHANGED,
+    PGPOST_WINDOWMINIMIZED,
+    PGPOST_WINDOWMAXIMIZED,
+    PGPOST_WINDOWRESTORED,
+    PGPOST_WINDOWENTER,
+    PGPOST_WINDOWLEAVE,
+    PGPOST_WINDOWFOCUSGAINED,
+    PGPOST_WINDOWFOCUSLOST,
+    PGPOST_WINDOWCLOSE,
+    PGPOST_WINDOWTAKEFOCUS,
+    PGPOST_WINDOWHITTEST,
+
+    PGE_USEREVENT, /* this event must stay in this position only */
+
+    PG_NUMEVENTS = SDL_LASTEVENT /* Not an event. Indicates end of user events. */
 } PygameEventCode;
-
-#define PGE_NUMRESERVED (PGE_EVENTEND - PGE_EVENTBEGIN)
 
 typedef enum {
     SDL_APPFOCUSMOUSE,
@@ -131,18 +230,41 @@ typedef enum {
     PGS_SRCALPHA = 0x00010000,
     PGS_PREALLOC = 0x01000000
 } PygameSurfaceFlags;
-#else /* ~SDL_VERSION_ATLEAST(2, 0, 0) */
+
+#else /* IS_SDLv2 */
+
 /* To maintain SDL 1.2 build support. */
 #define PGE_USEREVENT SDL_USEREVENT
 #define PG_NUMEVENTS SDL_NUMEVENTS
+#define PGPOST_EVENTBEGIN 0
 /* These midi events were originally defined in midi.py.
  * Note: They are outside the SDL_USEREVENT/SDL_NUMEVENTS event range for
  * SDL 1.2. */
 #define PGE_MIDIIN PGE_USEREVENT + 10
 #define PGE_MIDIOUT PGE_USEREVENT + 11
-#endif /* ~SDL_VERSION_ATLEAST(2, 0, 0) */
+#endif /* IS_SDLv1 */
+
+//TODO Implement check below in a way that does not break CI
+/* New buffer protocol (PEP 3118) implemented on all supported Py versions.
+#if !defined(Py_TPFLAGS_HAVE_NEWBUFFER)
+#error No support for PEP 3118/Py_TPFLAGS_HAVE_NEWBUFFER. Please use a supported Python version.
+#endif */
 
 #define RAISE(x, y) (PyErr_SetString((x), (y)), (PyObject *)NULL)
+#define DEL_ATTR_NOT_SUPPORTED_CHECK(name, value)           \
+    do {                                                    \
+       if (!value) {                                        \
+           if (name) {                                      \
+               PyErr_Format(PyExc_AttributeError,           \
+                            "Cannot delete attribute %s",   \
+                            name);                          \
+           } else {                                         \
+               PyErr_SetString(PyExc_AttributeError,        \
+                               "Cannot delete attribute");  \
+           }                                                \
+           return -1;                                       \
+       }                                                    \
+    } while (0)
 
 /*
  * Initialization checks
@@ -217,14 +339,14 @@ struct pgColorObject {
  * Remember to keep these constants up to date.
  */
 
-#define PYGAMEAPI_RECT_NUMSLOTS 4
+#define PYGAMEAPI_RECT_NUMSLOTS 5
 #define PYGAMEAPI_JOYSTICK_NUMSLOTS 2
 #define PYGAMEAPI_DISPLAY_NUMSLOTS 2
 #define PYGAMEAPI_SURFACE_NUMSLOTS 4
 #define PYGAMEAPI_SURFLOCK_NUMSLOTS 8
-#define PYGAMEAPI_RWOBJECT_NUMSLOTS 6
+#define PYGAMEAPI_RWOBJECT_NUMSLOTS 7
 #define PYGAMEAPI_PIXELARRAY_NUMSLOTS 2
-#define PYGAMEAPI_COLOR_NUMSLOTS 4
+#define PYGAMEAPI_COLOR_NUMSLOTS 5
 #define PYGAMEAPI_MATH_NUMSLOTS 2
 #define PYGAMEAPI_CDROM_NUMSLOTS 2
 
@@ -232,7 +354,7 @@ struct pgColorObject {
 #define PYGAMEAPI_BASE_NUMSLOTS 19
 #define PYGAMEAPI_EVENT_NUMSLOTS 4
 #else /* PG_API_VERSION == 2 */
-#define PYGAMEAPI_BASE_NUMSLOTS 23
+#define PYGAMEAPI_BASE_NUMSLOTS 24
 #define PYGAMEAPI_EVENT_NUMSLOTS 6
 #endif /* PG_API_VERSION == 2 */
 

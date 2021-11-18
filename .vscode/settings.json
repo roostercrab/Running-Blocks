@@ -4,5 +4,6 @@
     "titleBar.activeBackground": "#0D426E",
     "titleBar.activeForeground": "#F8FBFE"
   },
-  "python.pythonPath": "/Users/jesseshea/Desktop/Development/Python/Games/Running-Blocks/venv/bin/python3"
+  "python.pythonPath": "/Users/jesseshea/Desktop/Development/Python/Games/Running-Blocks/venv/bin/python3",
+  "python.formatting.provider": "black"
 }
